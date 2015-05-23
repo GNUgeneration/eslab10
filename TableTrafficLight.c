@@ -27,6 +27,27 @@
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 
+//Functions eja
+void WestTrafficControls(void) { //eja
+	if () { //eja
+		
+	} //eja
+} //eja
+
+void SouthTrafficControls(void) { //eja
+	unsigned long southSensor; //eja
+	southSensor = GPIO_PORTE_DATA_R&0x02; //eja
+	if (southSensor == 1) { //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 
+	} //eja		
+} //eja
+
+void WalkControls(void) { //eja
+	
+} //eja
+// Functions End eja
+
+
 // ***** 3. Subroutines Section *****
 void SysTick_Init(void) { //eja
 	NVIC_ST_CTRL_R = 0; //eja
