@@ -26,27 +26,38 @@
 // FUNCTION PROTOTYPES: Each subroutine defined
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
-
-//Functions eja
-void WestTrafficControls(void) { //eja
-	if () { //eja
-		
+// Functions eja
+void West(void) { //eja
+	unsigned long ews;
+	ews = GPIO_PORTB_DATA_R&0x01; //eja
+	if (ews == 1) { //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x08; //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
+		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
 	} //eja
 } //eja
 
-void SouthTrafficControls(void) { //eja
-	unsigned long southSensor; //eja
-	southSensor = GPIO_PORTE_DATA_R&0x02; //eja
-	if (southSensor == 1) { //eja
-		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 
-	} //eja		
+void South(void) { //eja
+	unsigned long nss; //eja
+	nss = GPIO_PORTB_DATA_R&0x02; //eja	
+	if (nss == 1) { //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x01; //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x; //eja
+		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
+	} //eja
 } //eja
 
-void WalkControls(void) { //eja
-	
+void Walk(void) { //eja
+	unsigned long ws; //eja
+	ws = GPIO_PORTB_DATA_R&0x04; //eja
+	if (ws == 1) { //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x; //eja
+		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
+	} //eja
 } //eja
-// Functions End eja
 
+//End Functions eja
 
 // ***** 3. Subroutines Section *****
 void SysTick_Init(void) { //eja
@@ -55,24 +66,23 @@ void SysTick_Init(void) { //eja
 	NVIC_ST_CURRENT_R = 0; //eja
 	NVIC_ST_CTRL_R = 0x00000005; //eja
 } //eja
-
 unsigned long S; //eja
 unsigned long Input; //eja
-int main(void){ 
-	volatile unsigned long delay; //eja
+int main(void){ /*eja*/ volatile unsigned long delay; //eja
   TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210); // activate grader and set system clock to 80 MHz
   SysTick_Init(); //eja
-  SYSCTL_RCGC2_R = SYSCTL_RCGC2_R | 0x32; //eja
+	SYSCTL_RCGC2_R = SYSCTL_RCGC2_R = 0x32; //eja
 	delay = SYSCTL_RCGC2_R; //eja
 	GPIO_PORTE_AMSEL_R = GPIO_PORTE_AMSEL_R & ~0x07; //eja
 	GPIO_PORTE_PCTL_R = GPIO_PORTE_PCTL_R & ~0x00000FFF; //eja
 	GPIO_PORTE_DIR_R = GPIO_PORTE_DIR_R & ~0x07; //eja
 	GPIO_PORTE_AFSEL_R = GPIO_PORTE_AFSEL_R & ~0x07; //eja
 	GPIO_PORTE_DEN_R = GPIO_PORTE_DEN_R | 0x07; //eja
-	
-  EnableInterrupts();
+  
+	EnableInterrupts();
   while(1){
-     
+    West(); //eja
+		South(); //eja
+		Walk(); //eja
   }
 }
-
