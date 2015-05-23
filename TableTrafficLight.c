@@ -26,7 +26,8 @@
 // FUNCTION PROTOTYPES: Each subroutine defined
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
-// Functions eja
+// Functions eja:__________________________________________________:<)
+
 void West(void) { //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x08; //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
@@ -45,7 +46,7 @@ void Walk(void) { //eja
 		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
 } //eja
 
-//End Functions eja
+//End Functions eja.________________________________________________:<)
 
 // ***** 3. Subroutines Section *****
 void SysTick_Init(void) { //eja
@@ -58,7 +59,6 @@ unsigned long S; //eja
 unsigned long Input; //eja
 int main(void){ /*eja*/ volatile unsigned long delay; //eja
   TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210); // activate grader and set system clock to 80 MHz
-	
   SysTick_Init(); //eja
 	SYSCTL_RCGC2_R = SYSCTL_RCGC2_R = 0x32; //eja
 	delay = SYSCTL_RCGC2_R; //eja
