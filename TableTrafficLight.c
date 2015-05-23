@@ -70,6 +70,7 @@ unsigned long S; //eja
 unsigned long Input; //eja
 int main(void){ /*eja*/ volatile unsigned long delay; //eja
   TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210); // activate grader and set system clock to 80 MHz
+	
   SysTick_Init(); //eja
 	SYSCTL_RCGC2_R = SYSCTL_RCGC2_R = 0x32; //eja
 	delay = SYSCTL_RCGC2_R; //eja
@@ -81,8 +82,10 @@ int main(void){ /*eja*/ volatile unsigned long delay; //eja
   
 	EnableInterrupts();
   while(1){
+		
     West(); //eja
 		South(); //eja
 		Walk(); //eja
+		
   }
 }
