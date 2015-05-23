@@ -28,33 +28,21 @@ void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 // Functions eja
 void West(void) { //eja
-	unsigned long ews;
-	ews = GPIO_PORTB_DATA_R&0x01; //eja
-	if (ews == 1) { //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x08; //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
 		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
-	} //eja
 } //eja
 
 void South(void) { //eja
-	unsigned long nss; //eja
-	nss = GPIO_PORTB_DATA_R&0x02; //eja	
-	if (nss == 1) { //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x01; //eja
-		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x; //eja
+		//GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x; //eja
 		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
-	} //eja
 } //eja
 
 void Walk(void) { //eja
-	unsigned long ws; //eja
-	ws = GPIO_PORTB_DATA_R&0x04; //eja
-	if (ws == 1) { //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
-		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x; //eja
+		//GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x; //eja
 		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
-	} //eja
 } //eja
 
 //End Functions eja
@@ -82,10 +70,21 @@ int main(void){ /*eja*/ volatile unsigned long delay; //eja
   
 	EnableInterrupts();
   while(1){
+	  unsigned long ews; //eja
+		unsigned long nss; //eja
+		unsigned long ws; //eja
+		ews = GPIO_PORTB_DATA_R&0x01; //eja
+		nss = GPIO_PORTB_DATA_R&0x02; //eja
+		ws = GPIO_PORTB_DATA_R&0x04; //eja
 		
-    West(); //eja
-		South(); //eja
-		Walk(); //eja
-		
+		if () { //eja
+			West(); //eja
+		} //eja
+		if () { //eja
+			South(); //eja
+		} //eja
+		if () { //eja
+			Walk(); //eja
+		} //eja
   }
 }
