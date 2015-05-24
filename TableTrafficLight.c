@@ -27,25 +27,51 @@
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 
+void delay(unsigned long t) { //eja
+	unsigned long i; //eja
+	while (t > 0) { //eja
+		i = 1333333; //eja
+		while (i > 0) { //eja
+			i = i - 1; //eja
+		} // eja
+		t = t - 1; //eja
+	} //eja
+} //eja
+
+void no_walk(void) { unsigned long ws, nnss, ewss; //eja
+	nnss = GPIO_PORTE_DATA_R&0x02; //eja
+	ewss = GPIO_PORTE_DATA_R&0x01; //eja
+	if ((nnss == 1) || (ewss == 1)) { //eja
+		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x02; //eja
+	} //eja
+	ws = GPIO_PORTE_DATA_R&0x04; //eja
+	if (ws == 1) { //eja
+		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
+	} //eja
+} //eja
 void walk(void) { unsigned long ws;//eja
 	ws = GPIO_PORTE_DATA_R&0x04;
-	if (ws == 1) { //eja
+	if (ws == 0) { //eja
+		delay(1); //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
-		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
 	} //eja
 } //eja
 void south(void) { unsigned long nss;//eja
 	nss = GPIO_PORTE_DATA_R&0x02; //eja
-	GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x01; //eja
-	GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
-	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x02; //eja
+	if (nss == 1) { //eja
+		delay(1); //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x01; //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
+	} //eja
 } //eja
 void west(void) { unsigned long ews;//eja
 	ews = GPIO_PORTE_DATA_R&0x01; //eja
-	GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x08; //eja
-	GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
-	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x02; //eja
+	if (ews == 1) { //eja
+		delay(1); //eja
+	  GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x08; //eja
+	  GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
+	} //eja
 } //eja
 
 // ***** 3. Subroutines Section *****
@@ -57,8 +83,6 @@ void SysTick_Init(void) { //eja
 void SysTick_Wait(unsigned long delay) { //eja
 	NVIC_ST_RELOAD_R = delay - 1; //eja
 	NVIC_ST_CURRENT_R = 0; //eja
-	//while ((NVIC_ST_CTRL_R&0x00010000) == 0) { //eja
-	//} //eja
 } //eja
 
 void SysTick_Wait10ms(unsigned long delay) { //eja
@@ -110,6 +134,7 @@ int main(void){ /*eja*/ volatile unsigned long delay; //eja
 		Input = SENSOR; //eja
 		S = FSM[S].Next[Input]; //eja
 		
+		no_walk(); //eja7
 		walk(); //eja
 		south(); //eja
 		west(); //eja
