@@ -26,65 +26,38 @@
 // FUNCTION PROTOTYPES: Each subroutine defined
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
-// Functions eja:__________________________________________________:<)
-
-void West(void) { //eja
-		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x08; //eja
-		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
-		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
-} //eja
-
-void South(void) { //eja
-		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x01; //eja
-		//GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x; //eja
-		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
-} //eja
-
-void Walk(void) { //eja
-		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
-		//GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x; //eja
-		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
-} //eja
-
-//End Functions eja.________________________________________________:<)
 
 // ***** 3. Subroutines Section *****
-void SysTick_Init(void) { //eja
-	NVIC_ST_CTRL_R = 0; //eja
-	NVIC_ST_RELOAD_R = 0x00FFFFFF; //eja
-	NVIC_ST_CURRENT_R = 0; //eja
-	NVIC_ST_CTRL_R = 0x00000005; //eja
-} //eja
+void PLL_Init(void) {
+	// 0) Use RCC2
+	SYSCTL_RCC2_R = SYSCTL_RCC2_R | 0x80000000; //eja
+//____________________________________________________________
+
+#define SENSOR (*((volatile unsigned long *)0x4002400C)) //eja
+#define LIGHT  (*((volatile unsigned long *)0x400050FC)) //eja
+// Linked data structure
+struct State { //eja
+	unsigned long Out; //eja
+	unsigned long Time; //eja
+	unsigned long Next[4];}; //eja
+typedef const struct State STyp; //eja
+#define goN   0 //eja
+#define waitN 1 //eja
+#define goE   2 //eja
+#define waitE 3 //eja
+STyp FSM[4] = { //eja
+	{0x21,3000,{goN,waitN,goN,waitN}}, //eja
+	{0x22, 500,{goE,goE,goE,goE}}, //eja
+	{0x0C,3000,{goE,goE,waitE,waitE}}, //eja 
+	{0x14, 500,{goN,goN,goN,goN}}}; //eja
 unsigned long S; //eja
 unsigned long Input; //eja
 int main(void){ /*eja*/ volatile unsigned long delay; //eja
-  TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210); // activate grader and set system clock to 80 MHz
-  SysTick_Init(); //eja
-	SYSCTL_RCGC2_R = SYSCTL_RCGC2_R = 0x32; //eja
-	delay = SYSCTL_RCGC2_R; //eja
-	GPIO_PORTE_AMSEL_R = GPIO_PORTE_AMSEL_R & ~0x07; //eja
-	GPIO_PORTE_PCTL_R = GPIO_PORTE_PCTL_R & ~0x00000FFF; //eja
-	GPIO_PORTE_DIR_R = GPIO_PORTE_DIR_R & ~0x07; //eja
-	GPIO_PORTE_AFSEL_R = GPIO_PORTE_AFSEL_R & ~0x07; //eja
-	GPIO_PORTE_DEN_R = GPIO_PORTE_DEN_R | 0x07; //eja
+  //TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210); // activate grader and set system clock to 80 MHz
+	
   
-	EnableInterrupts();
+  EnableInterrupts();
   while(1){
-	  unsigned long ews; //eja
-		unsigned long nss; //eja
-		unsigned long ws; //eja
-		ews = GPIO_PORTB_DATA_R&0x01; //eja
-		nss = GPIO_PORTB_DATA_R&0x02; //eja
-		ws = GPIO_PORTB_DATA_R&0x04; //eja
-		
-		if () { //eja
-			West(); //eja
-		} //eja
-		if () { //eja
-			South(); //eja
-		} //eja
-		if () { //eja
-			Walk(); //eja
-		} //eja
+     
   }
 }
