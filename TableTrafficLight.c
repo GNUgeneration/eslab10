@@ -27,10 +27,46 @@
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
 
+void walk(void) { unsigned long ws;//eja
+	ws = GPIO_PORTE_DATA_R&0x04;
+	if (ws == 1) { //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
+		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
+	} //eja
+} //eja
+void south(void) { unsigned long nss;//eja
+	nss = GPIO_PORTE_DATA_R&0x02; //eja
+	GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x01; //eja
+	GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
+	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x02; //eja
+} //eja
+void west(void) { unsigned long ews;//eja
+	ews = GPIO_PORTE_DATA_R&0x01; //eja
+	GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x08; //eja
+	GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
+	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x02; //eja
+} //eja
+
 // ***** 3. Subroutines Section *****
-void PLL_Init(void) {
-	// 0) Use RCC2
-	SYSCTL_RCC2_R = SYSCTL_RCC2_R | 0x80000000; //eja
+void SysTick_Init(void) { //eja
+	NVIC_ST_CTRL_R = 0; //eja
+	NVIC_ST_CTRL_R = 0x00000005; //eja
+} //eja
+
+void SysTick_Wait(unsigned long delay) { //eja
+	NVIC_ST_RELOAD_R = delay - 1; //eja
+	NVIC_ST_CURRENT_R = 0; //eja
+	//while ((NVIC_ST_CTRL_R&0x00010000) == 0) { //eja
+	//} //eja
+} //eja
+
+void SysTick_Wait10ms(unsigned long delay) { //eja
+	unsigned long i; //eja
+	for (i = 0; i < delay; ++i) { //eja
+		SysTick_Wait(800000); //eja
+	} //eja
+} //eja
 //____________________________________________________________
 
 #define SENSOR (*((volatile unsigned long *)0x4002400C)) //eja
@@ -39,7 +75,7 @@ void PLL_Init(void) {
 struct State { //eja
 	unsigned long Out; //eja
 	unsigned long Time; //eja
-	unsigned long Next[4];}; //eja
+	unsigned long Next[16];}; //eja
 typedef const struct State STyp; //eja
 #define goN   0 //eja
 #define waitN 1 //eja
@@ -53,11 +89,29 @@ STyp FSM[4] = { //eja
 unsigned long S; //eja
 unsigned long Input; //eja
 int main(void){ /*eja*/ volatile unsigned long delay; //eja
-  //TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210); // activate grader and set system clock to 80 MHz
-	
-  
+  TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210); // activate grader and set system clock to 80 MHz
+	SysTick_Init(); //eja
+	SYSCTL_RCGC2_R = SYSCTL_RCGC2_R | 0x32; //eja
+	delay = SYSCTL_RCGC2_R; //eja
+	GPIO_PORTE_AMSEL_R = GPIO_PORTE_AMSEL_R & ~0x07; //eja
+	GPIO_PORTE_PCTL_R = GPIO_PORTE_PCTL_R & ~0x00000FFF; //eja
+	GPIO_PORTE_DIR_R = GPIO_PORTE_DIR_R & ~0x07; //eja
+	GPIO_PORTE_AFSEL_R = GPIO_PORTE_AFSEL_R & ~0x07; //eja
+	GPIO_PORTE_DEN_R = GPIO_PORTE_DEN_R | 0x07; //eja
+//----------------------------------------------------------
+	GPIO_PORTB_DIR_R = GPIO_PORTB_DIR_R | 0x3F; //eja
+	GPIO_PORTB_DEN_R = GPIO_PORTB_DEN_R | 0x3F; //eja
+	GPIO_PORTB_AFSEL_R = GPIO_PORTB_AFSEL_R & ~0x3F; //eja
+  S = goN; //eja
   EnableInterrupts();
   while(1){
-     
+    LIGHT = FSM[S].Out; //eja
+		SysTick_Wait10ms(FSM[S].Time); //eja
+		Input = SENSOR; //eja
+		S = FSM[S].Next[Input]; //eja
+		
+		walk(); //eja
+		south(); //eja
+		west(); //eja
   }
 }
