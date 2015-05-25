@@ -38,42 +38,37 @@ void delay(unsigned long t) { //eja
 	} //eja
 } //eja
 
-void no_walk(void) { unsigned long ws, nnss, ewss; //eja
-	nnss = GPIO_PORTE_DATA_R&0x02; //eja
-	ewss = GPIO_PORTE_DATA_R&0x01; //eja
-	if ((nnss == 1) || (ewss == 1)) { //eja
-		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x02; //eja
-	} //eja
-	ws = GPIO_PORTE_DATA_R&0x04; //eja
-	if (ws == 1) { //eja
-		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
-	} //eja
-} //eja
-void walk(void) { unsigned long ws;//eja
-	ws = GPIO_PORTE_DATA_R&0x04;
-	if (ws == 0) { //eja
-		delay(1); //eja
+void R0(void) { unsigned long PE0; //eja
+	PE0 = GPIO_PORTE_DATA_R&0x01; //eja
+	if (PE0 == 1) { //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x08; //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
-		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
 	} //eja
 } //eja
-void south(void) { unsigned long nss;//eja
-	nss = GPIO_PORTE_DATA_R&0x02; //eja
-	if (nss == 1) { //eja
-		delay(1); //eja
+void R1(void) { unsigned long PE1; //eja
+	PE1 = GPIO_PORTE_DATA_R&0x02; //eja
+	if (PE1 == 1) { //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x01; //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
 	} //eja
 } //eja
-void west(void) { unsigned long ews;//eja
-	ews = GPIO_PORTE_DATA_R&0x01; //eja
-	if (ews == 1) { //eja
-		delay(1); //eja
-	  GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x08; //eja
-	  GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
+void R2(void) { unsigned long PE2; //eja
+	PE2 = GPIO_PORTE_DATA_R&0x04; //eja
+	if (PE2 == 1) { //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
+		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
+		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
+	} //eja
+} //eja
+void R3(void) { unsigned long PE0, PE1; //eja
+	PE0 = GPIO_PORTE_DATA_R&0x01; //eja
+	PE1 = GPIO_PORTE_DATA_R&0x02; //eja
+	if ((PE0 == 1) || (PE1 == 1)) { //eja
+		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x02; //eja
 	} //eja
 } //eja
 
+// ---------------------------------------------------------------------
 // ***** 3. Subroutines Section *****
 void SysTick_Init(void) { //eja
 	NVIC_ST_CTRL_R = 0; //eja
@@ -134,9 +129,9 @@ int main(void){ /*eja*/ volatile unsigned long delay; //eja
 		Input = SENSOR; //eja
 		S = FSM[S].Next[Input]; //eja
 		
-		no_walk(); //eja7
-		walk(); //eja
-		south(); //eja
-		west(); //eja
+		R0(); //eja
+		R1(); //eja
+		R2(); //eja
+		R3(); //eja
   }
 }
