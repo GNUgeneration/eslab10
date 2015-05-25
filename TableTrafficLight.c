@@ -70,6 +70,26 @@ void R3(void) { unsigned long PE0, PE1; //eja
 
 // ---------------------------------------------------------------------
 // ***** 3. Subroutines Section *****
+void PLL(void) { //eja
+	//0) use RCC2
+	SYSCTL_RCC2_R = SYSCTL_RCC2_R | 0x80000000; //eja
+	//1) bypass PLL while initializing
+	SYSCTL_RCC2_R = SYSCTL_RCC2_R | 0x00000800; //eja
+	//2) select the crystal value and oscillator source
+	SYSCTL_RCC_R = (SYSCTL_RCC_R & ~0x000007C0) //eja
+	               + 0x00000540; //eja
+	SYSCTL_RCC2_R = SYSCTL_RCC2_R & ~0x00000070; //eja
+	//3) activate PLL by clearing PWRDN
+	SYSCTL_RCC2_R = SYSCTL_RCC2_R & ~0x00002000; //eja
+	//4) set the desired system divider
+	SYSCTL_RCC2_R = SYSCTL_RCC2_R | 0x40000000; //eja
+	SYSCTL_RCC2_R = (SYSCTL_RCC2_R&~0x1FC00000) //eja
+									+ ( 4 << 22); //eja
+	//5) wait for the PLL to lock by polling PLLLRIS
+	while ((SYSCTL_RIS_R&0x00000040) == 0) {}; //eja
+	//6) enable use of PLL by clearing BYPASS
+		SYSCTL_RCC2_R = SYSCTL_RCC2_R & ~0x00000800; //eja
+} //eja
 void SysTick_Init(void) { //eja
 	NVIC_ST_CTRL_R = 0; //eja
 	NVIC_ST_CTRL_R = 0x00000005; //eja
@@ -108,7 +128,7 @@ STyp FSM[4] = { //eja
 unsigned long S; //eja
 unsigned long Input; //eja
 int main(void){ /*eja*/ volatile unsigned long delay; //eja
-  TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210); // activate grader and set system clock to 80 MHz
+  //TExaS_Init(SW_PIN_PE210, LED_PIN_PB543210); // activate grader and set system clock to 80 MHz
 	SysTick_Init(); //eja
 	SYSCTL_RCGC2_R = SYSCTL_RCGC2_R | 0x32; //eja
 	delay = SYSCTL_RCGC2_R; //eja
@@ -122,7 +142,7 @@ int main(void){ /*eja*/ volatile unsigned long delay; //eja
 	GPIO_PORTB_DEN_R = GPIO_PORTB_DEN_R | 0x3F; //eja
 	GPIO_PORTB_AFSEL_R = GPIO_PORTB_AFSEL_R & ~0x3F; //eja
   S = goN; //eja
-  EnableInterrupts();
+  //EnableInterrupts();
   while(1){
     LIGHT = FSM[S].Out; //eja
 		SysTick_Wait10ms(FSM[S].Time); //eja
