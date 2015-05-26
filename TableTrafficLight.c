@@ -26,16 +26,25 @@
 // FUNCTION PROTOTYPES: Each subroutine defined
 void DisableInterrupts(void); // Disable interrupts
 void EnableInterrupts(void);  // Enable interrupts
-
+// Functions eja-------------------------------------------------------------****
 void delay(unsigned long t) { //eja
 	unsigned long i; //eja
 	while (t > 0) { //eja
-		i = 1333333; //eja
+		i = 1333333; //+ 1333333; //eja
 		while (i > 0) { //eja
-			i = i - 1; //eja
-		} // eja
+			i  = i - 1; //eja
+		} //eja
 		t = t - 1; //eja
 	} //eja
+} //eja
+
+void flasher(void) { //eja
+	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x01; //eja
+	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R &~0x01; //eja
+	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x01; //eja
+	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R &~0x01; //eja
+	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x01; //eja
+	GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R &~0x01; //eja
 } //eja
 
 void R0(void) { unsigned long PE0; //eja
@@ -45,6 +54,7 @@ void R0(void) { unsigned long PE0; //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
 	} //eja
 } //eja
+
 void R1(void) { unsigned long PE1; //eja
 	PE1 = GPIO_PORTE_DATA_R&0x02; //eja
 	if (PE1 == 1) { //eja
@@ -52,14 +62,21 @@ void R1(void) { unsigned long PE1; //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
 	} //eja
 } //eja
-void R2(void) { unsigned long PE2; //eja
+
+void R2(void) { unsigned long PE2, PE1, PE0; //eja
 	PE2 = GPIO_PORTE_DATA_R&0x04; //eja
 	if (PE2 == 1) { //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x04; //eja
 		GPIO_PORTB_DATA_R = GPIO_PORTB_DATA_R | 0x20; //eja
 		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x08; //eja
 	} //eja
+	PE1 = GPIO_PORTE_DATA_R&0x02;
+	PE0 = GPIO_PORTE_DATA_R&0x01;
+	if ((PE0 == 1) || (PE1 == 1)) { //eja
+		flasher(); //eja
+	}
 } //eja
+
 void R3(void) { unsigned long PE0, PE1; //eja
 	PE0 = GPIO_PORTE_DATA_R&0x01; //eja
 	PE1 = GPIO_PORTE_DATA_R&0x02; //eja
@@ -67,8 +84,8 @@ void R3(void) { unsigned long PE0, PE1; //eja
 		GPIO_PORTF_DATA_R = GPIO_PORTF_DATA_R | 0x02; //eja
 	} //eja
 } //eja
+// Functions edn eja----------------------------------------------------------****
 
-// ---------------------------------------------------------------------
 // ***** 3. Subroutines Section *****
 void PLL(void) { //eja
 	//0) use RCC2
@@ -84,7 +101,7 @@ void PLL(void) { //eja
 	//4) set the desired system divider
 	SYSCTL_RCC2_R = SYSCTL_RCC2_R | 0x40000000; //eja
 	SYSCTL_RCC2_R = (SYSCTL_RCC2_R&~0x1FC00000) //eja
-									+ ( 4 << 22); //eja
+									+ (4 << 22); //eja
 	//5) wait for the PLL to lock by polling PLLLRIS
 	while ((SYSCTL_RIS_R&0x00000040) == 0) {}; //eja
 	//6) enable use of PLL by clearing BYPASS
